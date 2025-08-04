@@ -27,9 +27,9 @@ window.addEventListener("DOMContentLoaded", () => {
   // Set focus on the Python editor
   pythonEditor.focus();
 
-  // Synchronize radio buttons between desktop and mobile
-  function syncRadioButtons() {
-    // Desktop to Mobile sync
+  // Synchronize all form controls between desktop and mobile
+  function syncFormControls() {
+    // Radio button synchronization - Desktop to Mobile
     document.getElementById('micropython').addEventListener('change', function() {
       if (this.checked) {
         document.getElementById('micropython-mobile').checked = true;
@@ -44,7 +44,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Mobile to Desktop sync
+    // Radio button synchronization - Mobile to Desktop
     document.getElementById('micropython-mobile').addEventListener('change', function() {
       if (this.checked) {
         document.getElementById('micropython').checked = true;
@@ -58,10 +58,28 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById('micropython').checked = false;
       }
     });
+
+    // Checkbox synchronization - Terminal
+    document.getElementById('terminal').addEventListener('change', function() {
+      document.getElementById('terminal-mobile').checked = this.checked;
+    });
+    
+    document.getElementById('terminal-mobile').addEventListener('change', function() {
+      document.getElementById('terminal').checked = this.checked;
+    });
+
+    // Checkbox synchronization - Worker
+    document.getElementById('worker').addEventListener('change', function() {
+      document.getElementById('worker-mobile').checked = this.checked;
+    });
+    
+    document.getElementById('worker-mobile').addEventListener('change', function() {
+      document.getElementById('worker').checked = this.checked;
+    });
   }
 
-  // Initialize radio button synchronization
-  syncRadioButtons();
+  // Initialize form control synchronization
+  syncFormControls();
 
   // Function to handle running the code
   function runCode() {
