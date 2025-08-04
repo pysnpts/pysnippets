@@ -1,0 +1,283 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-bar {
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  font-size: 1.5rem;
+}
+
+.site-title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.site-title a {
+  color: inherit;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.burger-toggle {
+  display: none;
+}
+
+.burger-menu {
+  display: none;
+  background: none;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  color: #333;
+}
+
+.burger-menu:hover {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+
+.mobile-controls {
+  display: none;
+}
+
+.controls-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.runtime-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.runtime-group label:first-child {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.options-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.options-group input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.run-button {
+  padding: 8px 16px;
+  font-size: 1rem;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.run-button svg {
+  vertical-align: middle;
+}
+
+.run-button:hover {
+  background: #005a9e;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.pane {
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #ddd;
+  flex: 1 1 50%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.editor {
+  flex: 1;
+  border: 1px solid #ccc;
+}
+
+#output {
+  flex: 1;
+  border: 1px solid #ccc;
+  background: #fff;
+  overflow: auto;
+}
+
+.footer {
+  background: #f5f5f5;
+  border-top: 1px solid #ddd;
+  padding: 10px 20px;
+  flex-shrink: 0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.copyright {
+  margin: 0;
+}
+
+.footer-links {
+  display: flex;
+  gap: 15px;
+}
+
+.github-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #666;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.github-link:hover {
+  color: #333;
+}
+
+.github-link svg {
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .header-bar {
+    padding: 8px 15px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+  
+  .logo-section {
+    gap: 5px;
+  }
+  
+  .logo {
+    font-size: 1.2rem;
+  }
+  
+  .site-title {
+    font-size: 1rem;
+  }
+  
+  .controls-section {
+    display: none;
+  }
+  
+  .burger-menu {
+    display: block;
+  }
+  
+  .mobile-controls {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+    z-index: 1000;
+    min-width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .burger-toggle:checked ~ .mobile-controls {
+    display: flex;
+  }
+  
+  .mobile-controls .runtime-group,
+  .mobile-controls .options-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .main-content {
+    flex: none;
+    display: block;
+    overflow: visible;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .pane {
+    flex: none;
+    width: 100%;
+    height: auto;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  
+  .pane:last-child {
+    margin-bottom: 0;
+  }
+  
+  .editor,
+  #output {
+    flex: 1;
+    min-height: 250px;
+  }
+}
