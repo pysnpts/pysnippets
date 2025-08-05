@@ -127,6 +127,7 @@ window.addEventListener("DOMContentLoaded", () => {
     doc.write(`<!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="./mini-coi.js"></script>
   <link rel="stylesheet" href="https://pyscript.net/releases/2025.7.3/core.css" />
   <script type="module" src="https://pyscript.net/releases/2025.7.3/core.js"></script>
   ${cssCode}
