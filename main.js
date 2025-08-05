@@ -27,59 +27,39 @@ window.addEventListener("DOMContentLoaded", () => {
   // Set focus on the Python editor
   pythonEditor.focus();
 
-  // Synchronize all form controls between desktop and mobile
-  function syncFormControls() {
-    // Radio button synchronization - Desktop to Mobile
-    document.getElementById('micropython').addEventListener('change', function() {
-      if (this.checked) {
-        document.getElementById('micropython-mobile').checked = true;
-        document.getElementById('pyodide-mobile').checked = false;
-      }
-    });
-    
-    document.getElementById('pyodide').addEventListener('change', function() {
-      if (this.checked) {
-        document.getElementById('pyodide-mobile').checked = true;
-        document.getElementById('micropython-mobile').checked = false;
-      }
-    });
+  // Modal functionality
+  const modal = document.getElementById('settings-modal');
+  const settingsBtn = document.getElementById('settings-btn');
+  const closeBtn = document.getElementById('close-modal');
 
-    // Radio button synchronization - Mobile to Desktop
-    document.getElementById('micropython-mobile').addEventListener('change', function() {
-      if (this.checked) {
-        document.getElementById('micropython').checked = true;
-        document.getElementById('pyodide').checked = false;
-      }
-    });
-    
-    document.getElementById('pyodide-mobile').addEventListener('change', function() {
-      if (this.checked) {
-        document.getElementById('pyodide').checked = true;
-        document.getElementById('micropython').checked = false;
-      }
-    });
-
-    // Checkbox synchronization - Terminal
-    document.getElementById('terminal').addEventListener('change', function() {
-      document.getElementById('terminal-mobile').checked = this.checked;
-    });
-    
-    document.getElementById('terminal-mobile').addEventListener('change', function() {
-      document.getElementById('terminal').checked = this.checked;
-    });
-
-    // Checkbox synchronization - Worker
-    document.getElementById('worker').addEventListener('change', function() {
-      document.getElementById('worker-mobile').checked = this.checked;
-    });
-    
-    document.getElementById('worker-mobile').addEventListener('change', function() {
-      document.getElementById('worker').checked = this.checked;
-    });
+  function openModal() {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 
-  // Initialize form control synchronization
-  syncFormControls();
+  function closeModal() {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    // Return focus to the Python editor
+    pythonEditor.focus();
+  }
+
+  settingsBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+
+  // Close modal when clicking outside of it
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('show')) {
+      closeModal();
+    }
+  });
 
   // Function to handle running the code
   function runCode() {
@@ -87,24 +67,44 @@ window.addEventListener("DOMContentLoaded", () => {
     const cssCode = `<style>${cssEditor.state.doc.toString()}</style>`;
     const py = pythonEditor.state.doc.toString();
 
-    // Get runtime selection (check desktop first, then mobile as fallback)
-    let runtime = 'micropython'; // default
-    const desktopRuntime = document.querySelector('input[name="runtime-desktop"]:checked');
-    const mobileRuntime = document.querySelector('input[name="runtime-mobile"]:checked');
-    
-    if (desktopRuntime) {
-      runtime = desktopRuntime.value;
-    } else if (mobileRuntime) {
-      runtime = mobileRuntime.value;
-    }
-    
+    // Get runtime selection
+    const runtimeInput = document.querySelector('input[name="runtime"]:checked');
+    const runtime = runtimeInput ? runtimeInput.value : 'micropython';
     const scriptType = runtime === 'micropython' ? 'mpy' : 'py';
 
-    // Get checkbox states (check both desktop and mobile inputs)
-    const enableTerminal = document.getElementById('terminal').checked || 
-                          document.getElementById('terminal-mobile').checked;
-    const enableWorker = document.getElementById('worker').checked || 
-                        document.getElementById('worker-mobile').checked;
+    // Get checkbox states
+    const enableTerminal = document.getElementById('terminal').checked;
+    const enableWorker = document.getElementById('worker').checked;
+
+    // Get packages and files input
+    const packagesInput = document.getElementById('packages').value.trim();
+    const filesInput = document.getElementById('files').value.trim();
+
+    // Build configuration element if needed
+    let configElement = '';
+    if (packagesInput || filesInput) {
+      const configTag = runtime === 'micropython' ? 'mpy-config' : 'py-config';
+      let configContent = '';
+      
+      if (packagesInput) {
+        configContent += `packages = [${packagesInput}]\n`;
+      }
+      
+      if (filesInput) {
+        configContent += '[files]\n';
+        // Split by lines and add each file mapping
+        const fileLines = filesInput.split('\n').filter(line => line.trim());
+        fileLines.forEach(line => {
+          if (line.trim()) {
+            configContent += `${line.trim()}\n`;
+          }
+        });
+      }
+      
+      if (configContent) {
+        configElement = `<${configTag}>\n${configContent}</${configTag}>\n`;
+      }
+    }
 
     // Build script tag attributes
     let scriptAttributes = `type="${scriptType}"`;
@@ -132,7 +132,7 @@ window.addEventListener("DOMContentLoaded", () => {
   ${cssCode}
 </head>
 <body>
-  ${html}
+  ${configElement}${html}
   <script ${scriptAttributes}>
 ${py}
   </script>
