@@ -69,8 +69,9 @@ function generateShareLink() {
     files: files
   };
   
-  // Encode the data as a URL parameter
-  const encodedData = btoa(JSON.stringify(shareData));
+  // Encode the data as a URL parameter (Unicode-safe)
+  const jsonString = JSON.stringify(shareData);
+  const encodedData = btoa(encodeURIComponent(jsonString));
   const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
   
   // Update the share link input
@@ -139,7 +140,7 @@ function loadSharedCode() {
   
   if (shareParam) {
     try {
-      const shareData = JSON.parse(atob(shareParam));
+      const shareData = JSON.parse(decodeURIComponent(atob(shareParam)));
       
       // Load code into editors
       if (shareData.html) {
