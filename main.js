@@ -115,42 +115,42 @@ window.addEventListener("DOMContentLoaded", () => {
       scriptAttributes += ' worker';
     }
 
-    const iframe = document.getElementById("output");
-    
-    // Reset the iframe by recreating it
-    const newIframe = iframe.cloneNode(false);
-    iframe.parentNode.replaceChild(newIframe, iframe);
-    
-    const doc = newIframe.contentDocument || newIframe.contentWindow.document;
+    const oldFrame = document.getElementById("output");
 
-    doc.open();
-    doc.write(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <script src="./mini-coi.js"></script>
-  <link rel="stylesheet" href="https://pyscript.net/releases/2025.7.3/core.css" />
-  <script type="module" src="https://pyscript.net/releases/2025.7.3/core.js"></script>
-  ${cssCode}
-</head>
-<body>
-  ${configElement}${html}
-  <script ${scriptAttributes}>
-${py}
-  </script>
-</body>
-</html>`);
-    doc.close();
+    // Reset the iframe by recreating it
+    const iframe = oldFrame.cloneNode(false);
+    oldFrame.replaceWith(iframe);
 
     // Focus and scroll to output pane after running code
-    setTimeout(() => {
-      const outputPane = document.getElementById("output").closest('.pane');
+    iframe.onload = () => {
+      const outputPane = iframe.closest('.pane');
       if (outputPane) {
         outputPane.scrollIntoView({ behavior: 'smooth', block: 'start' });
         // Try to focus the iframe
-        const iframe = document.getElementById("output");
         iframe.focus();
       }
-    }, 100);
+    };
+
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <link rel="stylesheet" href="https://pyscript.net/releases/2025.7.3/core.css">
+          <script type="module" src="https://pyscript.net/releases/2025.7.3/core.js"></script>
+          ${cssCode}
+        </head>
+        <body>
+          ${configElement}${html}
+          <script ${scriptAttributes}>
+        ${py}
+          </script>
+        </body>
+      </html>
+    `.trim());
+    doc.close();
   }
 
   // Add click event listener to the run button
