@@ -104,6 +104,34 @@ function copyShareLink() {
   }
 }
 
+// Open is.gd URL shortening page in a new tab
+function generateShortUrl() {
+  const shareLinkInput = document.getElementById('share-link');
+  const shortUrlBtn = document.getElementById('short-url-btn');
+  const originalUrl = shareLinkInput.value;
+  
+  if (!originalUrl || originalUrl === 'Generating share link...') {
+    return;
+  }
+  
+  // URL encode the original URL for the query parameter
+  const encodedUrl = encodeURIComponent(originalUrl);
+  const shortUrlCreationUrl = `https://is.gd/create.php?url=${encodedUrl}`;
+  
+  // Open the URL shortening page in a new tab
+  window.open(shortUrlCreationUrl, '_blank');
+  
+  // Visual feedback for opening the tab
+  const originalText = shortUrlBtn.innerHTML;
+  shortUrlBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/></svg>Opened';
+  shortUrlBtn.style.background = '#5a6268';
+  
+  setTimeout(() => {
+    shortUrlBtn.innerHTML = originalText;
+    shortUrlBtn.style.background = '';
+  }, 2000);
+}
+
 // Load shared code from URL parameter
 function loadSharedCode() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -186,6 +214,10 @@ aboutLink.addEventListener('click', (e) => {
 // Copy share link button
 const copyLinkBtn = document.getElementById('copy-link-btn');
 copyLinkBtn.addEventListener('click', copyShareLink);
+
+// Short URL button
+const shortUrlBtn = document.getElementById('short-url-btn');
+shortUrlBtn.addEventListener('click', generateShortUrl);
 
 // Close buttons with data-modal attribute
 document.querySelectorAll('.close-button[data-modal]').forEach(button => {

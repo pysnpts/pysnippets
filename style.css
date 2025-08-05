@@ -420,6 +420,34 @@ a:hover {
   margin: 0;
 }
 
+.short-url-button {
+  padding: 8px 12px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.short-url-button:hover {
+  background: #5a6268;
+}
+
+.short-url-button:disabled {
+  background: #adb5bd;
+  cursor: not-allowed;
+}
+
+.short-url-button svg {
+  vertical-align: middle;
+}
+
 .copy-button {
   padding: 8px 12px;
   background: #007acc;
