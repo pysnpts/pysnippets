@@ -115,6 +115,13 @@ a:hover {
 .label {
   font-weight: bold;
   margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.label svg {
+  vertical-align: middle;
 }
 
 .editor {
