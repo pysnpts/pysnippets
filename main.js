@@ -43,6 +43,123 @@ function closeModal(modalId) {
   }
 }
 
+// Generate a shareable link with the current code
+function generateShareLink() {
+  const html = htmlEditor.state.doc.toString();
+  const css = cssEditor.state.doc.toString();
+  const python = pythonEditor.state.doc.toString();
+  
+  // Get current settings
+  const runtimeInput = document.querySelector('input[name="runtime"]:checked');
+  const runtime = runtimeInput ? runtimeInput.value : 'micropython';
+  const enableTerminal = document.getElementById('terminal').checked;
+  const enableWorker = document.getElementById('worker').checked;
+  const packages = document.getElementById('packages').value.trim();
+  const files = document.getElementById('files').value.trim();
+  
+  // Create a data object with all the code and settings
+  const shareData = {
+    html: html,
+    css: css,
+    python: python,
+    runtime: runtime,
+    terminal: enableTerminal,
+    worker: enableWorker,
+    packages: packages,
+    files: files
+  };
+  
+  // Encode the data as a URL parameter
+  const encodedData = btoa(JSON.stringify(shareData));
+  const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
+  
+  // Update the share link input
+  const shareLinkInput = document.getElementById('share-link');
+  shareLinkInput.value = shareUrl;
+}
+
+// Copy share link to clipboard
+function copyShareLink() {
+  const shareLinkInput = document.getElementById('share-link');
+  shareLinkInput.select();
+  shareLinkInput.setSelectionRange(0, 99999); // For mobile devices
+  
+  try {
+    navigator.clipboard.writeText(shareLinkInput.value).then(() => {
+      // Visual feedback for successful copy
+      const copyBtn = document.getElementById('copy-link-btn');
+      const originalText = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Copied!';
+      copyBtn.style.background = '#4CAF50';
+      
+      setTimeout(() => {
+        copyBtn.innerHTML = originalText;
+        copyBtn.style.background = '';
+      }, 2000);
+    });
+  } catch (err) {
+    // Fallback for older browsers
+    document.execCommand('copy');
+    console.log('Link copied to clipboard');
+  }
+}
+
+// Load shared code from URL parameter
+function loadSharedCode() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const shareParam = urlParams.get('share');
+  
+  if (shareParam) {
+    try {
+      const shareData = JSON.parse(atob(shareParam));
+      
+      // Load code into editors
+      if (shareData.html) {
+        htmlEditor.dispatch({
+          changes: { from: 0, to: htmlEditor.state.doc.length, insert: shareData.html }
+        });
+      }
+      
+      if (shareData.css) {
+        cssEditor.dispatch({
+          changes: { from: 0, to: cssEditor.state.doc.length, insert: shareData.css }
+        });
+      }
+      
+      if (shareData.python) {
+        pythonEditor.dispatch({
+          changes: { from: 0, to: pythonEditor.state.doc.length, insert: shareData.python }
+        });
+      }
+      
+      // Load settings
+      if (shareData.runtime) {
+        const runtimeInput = document.querySelector(`input[name="runtime"][value="${shareData.runtime}"]`);
+        if (runtimeInput) runtimeInput.checked = true;
+      }
+      
+      if (shareData.hasOwnProperty('terminal')) {
+        document.getElementById('terminal').checked = shareData.terminal;
+      }
+      
+      if (shareData.hasOwnProperty('worker')) {
+        document.getElementById('worker').checked = shareData.worker;
+      }
+      
+      if (shareData.packages) {
+        document.getElementById('packages').value = shareData.packages;
+      }
+      
+      if (shareData.files) {
+        document.getElementById('files').value = shareData.files;
+      }
+      
+    } catch (error) {
+      console.error('Error loading shared code:', error);
+    }
+  }
+}
+
 // Settings modal
 const settingsBtn = document.getElementById('settings-btn');
 settingsBtn.addEventListener('click', () => openModal('settings-modal'));
@@ -50,8 +167,8 @@ settingsBtn.addEventListener('click', () => openModal('settings-modal'));
 // Share button
 const shareBtn = document.getElementById('share-btn');
 shareBtn.addEventListener('click', () => {
-  // TODO: Implement share functionality
-  console.log('Share button clicked');
+  generateShareLink();
+  openModal('share-modal');
 });
 
 // About modal
@@ -60,6 +177,10 @@ aboutLink.addEventListener('click', (e) => {
   e.preventDefault();
   openModal('about-modal');
 });
+
+// Copy share link button
+const copyLinkBtn = document.getElementById('copy-link-btn');
+copyLinkBtn.addEventListener('click', copyShareLink);
 
 // Close buttons with data-modal attribute
 document.querySelectorAll('.close-button[data-modal]').forEach(button => {
@@ -190,3 +311,13 @@ document.addEventListener("keydown", (event) => {
     runCode();
   }
 });
+
+// Load shared code if present in URL on page load
+document.addEventListener('DOMContentLoaded', loadSharedCode);
+
+// If DOMContentLoaded has already fired, call loadSharedCode immediately
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadSharedCode);
+} else {
+  loadSharedCode();
+}

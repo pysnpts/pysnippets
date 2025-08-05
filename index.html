@@ -204,6 +204,34 @@
     </div>
   </div>
   
+  <!-- Share Modal -->
+  <div id="share-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Share Code</h2>
+        <div class="header-actions">
+          <button class="close-button" data-modal="share-modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p>Share your PySnippet code with others by copying the link below.</p>
+        <div class="share-link-container">
+          <input type="text" id="share-link" class="text-input" readonly placeholder="Generating share link...">
+          <button id="copy-link-btn" class="copy-button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <footer class="footer">
     <div class="footer-content">
       <div class="copyright">

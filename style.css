@@ -409,6 +409,40 @@ a:hover {
   min-height: 80px;
 }
 
+.share-link-container {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.share-link-container .text-input {
+  flex: 1;
+  margin: 0;
+}
+
+.copy-button {
+  padding: 8px 12px;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+  background: #005a9e;
+}
+
+.copy-button svg {
+  vertical-align: middle;
+}
+
 @media (max-width: 768px) {
   body {
     height: auto;
