@@ -154,6 +154,11 @@ function loadSharedCode() {
         document.getElementById('files').value = shareData.files;
       }
       
+      // Automatically run the shared code after a short delay to ensure everything is loaded
+      setTimeout(() => {
+        runCode();
+      }, 100);
+      
     } catch (error) {
       console.error('Error loading shared code:', error);
     }
