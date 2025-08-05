@@ -24,37 +24,60 @@ const pythonEditor = createEditor("python-editor", python());
 // Set focus on the Python editor
 pythonEditor.focus();
 
-// Modal functionality
-const modal = document.getElementById('settings-modal');
+// Shared modal functionality
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    // Return focus to the Python editor
+    pythonEditor.focus();
+  }
+}
+
+// Settings modal
 const settingsBtn = document.getElementById('settings-btn');
-const closeBtn = document.getElementById('close-modal');
+settingsBtn.addEventListener('click', () => openModal('settings-modal'));
 
-function openModal() {
-  modal.classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
+// About modal
+const aboutLink = document.getElementById('about-link');
+aboutLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal('about-modal');
+});
 
-function closeModal() {
-  modal.classList.remove('show');
-  document.body.style.overflow = '';
-  // Return focus to the Python editor
-  pythonEditor.focus();
-}
-
-settingsBtn.addEventListener('click', openModal);
-closeBtn.addEventListener('click', closeModal);
+// Close buttons with data-modal attribute
+document.querySelectorAll('.close-button[data-modal]').forEach(button => {
+  button.addEventListener('click', () => {
+    const modalId = button.getAttribute('data-modal');
+    closeModal(modalId);
+  });
+});
 
 // Close modal when clicking outside of it
-modal.addEventListener('click', (e) => {
-  if (e.target === modal) {
-    closeModal();
-  }
+document.querySelectorAll('.modal').forEach(modal => {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal(modal.id);
+    }
+  });
 });
 
 // Close modal with Escape key
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && modal.classList.contains('show')) {
-    closeModal();
+  if (e.key === 'Escape') {
+    const openModal = document.querySelector('.modal.show');
+    if (openModal) {
+      closeModal(openModal.id);
+    }
   }
 });
 
