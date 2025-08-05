@@ -24,6 +24,9 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .logo-section {
@@ -71,6 +74,28 @@ a:hover {
 }
 
 .settings-button svg {
+  vertical-align: middle;
+}
+
+.share-button {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background: #f8f8f8;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s;
+}
+
+.share-button:hover {
+  background: #e8e8e8;
+}
+
+.share-button svg {
   vertical-align: middle;
 }
 
@@ -392,10 +417,18 @@ a:hover {
   
   .header-bar {
     padding: 8px 15px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
   
   .logo-section {
     gap: 5px;
+    justify-content: center;
+  }
+  
+  .header-actions {
+    justify-content: center;
   }
   
   .logo {
@@ -407,6 +440,11 @@ a:hover {
   }
   
   .settings-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .share-button {
     padding: 6px 10px;
     font-size: 0.8rem;
   }

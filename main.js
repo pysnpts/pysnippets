@@ -47,6 +47,13 @@ function closeModal(modalId) {
 const settingsBtn = document.getElementById('settings-btn');
 settingsBtn.addEventListener('click', () => openModal('settings-modal'));
 
+// Share button
+const shareBtn = document.getElementById('share-btn');
+shareBtn.addEventListener('click', () => {
+  // TODO: Implement share functionality
+  console.log('Share button clicked');
+});
+
 // About modal
 const aboutLink = document.getElementById('about-link');
 aboutLink.addEventListener('click', (e) => {
