@@ -80,6 +80,90 @@ function generateShareLink() {
   
   const appLinkInput = document.getElementById('app-link');
   appLinkInput.value = appUrl;
+  
+  // Generate QR codes
+  generateQRCodes(shareUrl, appUrl);
+}
+
+// Generate QR codes for share URLs
+function generateQRCodes(editorUrl, appUrl) {
+  // Clear any existing QR codes
+  const editorQRContainer = document.getElementById('editor-qr');
+  const appQRContainer = document.getElementById('app-qr');
+  
+  if (editorQRContainer) {
+    editorQRContainer.innerHTML = '';
+  }
+  if (appQRContainer) {
+    appQRContainer.innerHTML = '';
+  }
+  
+  // Check if QRCode library is available
+  if (!window.QRCode) {
+    console.error('QRCode library not loaded');
+    return;
+  }
+  
+  // QR code options - larger size for better visibility
+  const qrOptions = {
+    width: 200,
+    height: 200,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  };
+  
+  // Generate QR code for editor link
+  if (editorQRContainer) {
+    try {
+      new QRCode(editorQRContainer, {
+        text: editorUrl,
+        ...qrOptions
+      });
+    } catch (error) {
+      console.error('Error generating editor QR code:', error);
+    }
+  }
+  
+  // Generate QR code for app link
+  if (appQRContainer) {
+    try {
+      new QRCode(appQRContainer, {
+        text: appUrl,
+        ...qrOptions
+      });
+    } catch (error) {
+      console.error('Error generating app QR code:', error);
+    }
+  }
+}
+
+// Toggle QR code display for editor link
+function toggleEditorQR() {
+  const qrContainer = document.getElementById('editor-qr-container');
+  const qrButton = document.getElementById('qr-toggle-btn');
+  
+  if (qrContainer.style.display === 'none') {
+    qrContainer.style.display = 'flex';
+    qrButton.classList.add('active');
+  } else {
+    qrContainer.style.display = 'none';
+    qrButton.classList.remove('active');
+  }
+}
+
+// Toggle QR code display for app link
+function toggleAppQR() {
+  const qrContainer = document.getElementById('app-qr-container');
+  const qrButton = document.getElementById('app-qr-toggle-btn');
+  
+  if (qrContainer.style.display === 'none') {
+    qrContainer.style.display = 'flex';
+    qrButton.classList.add('active');
+  } else {
+    qrContainer.style.display = 'none';
+    qrButton.classList.remove('active');
+  }
 }
 
 // Copy share link to clipboard
@@ -270,6 +354,10 @@ aboutLink.addEventListener('click', (e) => {
 const copyLinkBtn = document.getElementById('copy-link-btn');
 copyLinkBtn.addEventListener('click', copyShareLink);
 
+// QR toggle button for editor link
+const qrToggleBtn = document.getElementById('qr-toggle-btn');
+qrToggleBtn.addEventListener('click', toggleEditorQR);
+
 // Short URL button
 const shortUrlBtn = document.getElementById('short-url-btn');
 shortUrlBtn.addEventListener('click', generateShortUrl);
@@ -277,6 +365,10 @@ shortUrlBtn.addEventListener('click', generateShortUrl);
 // Copy app share link button
 const copyAppLinkBtn = document.getElementById('copy-app-link-btn');
 copyAppLinkBtn.addEventListener('click', copyAppShareLink);
+
+// QR toggle button for app link
+const appQrToggleBtn = document.getElementById('app-qr-toggle-btn');
+appQrToggleBtn.addEventListener('click', toggleAppQR);
 
 // Short app URL button
 const shortAppUrlBtn = document.getElementById('short-app-url-btn');

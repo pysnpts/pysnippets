@@ -9,6 +9,7 @@
   <script type="module" src="https://pyscript.net/releases/2025.7.3/core.js"></script>
   <link rel="stylesheet" href="style.css" />
   <script src="./mini-coi.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script type="module" src="main.js"></script>
 </head>
 <body>
@@ -225,50 +226,72 @@
         <div class="share-option">
           <h4>Editor Link</h4>
           <p>Open in the PySnippets editor (for viewing and editing code)</p>
-          <div class="share-link-container">
+          <div class="share-content">
             <input type="text" id="share-link" class="text-input" readonly placeholder="Generating share link...">
-            <button id="copy-link-btn" class="copy-button">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-              </svg>
-              Copy
-            </button>
-            <button id="short-url-btn" class="short-url-button">
-              <svg width="16" height="16" viewBox="-5.5 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <title>small</title>
-                  <path d="M10.406 7.75v7.063c0 0.313 0.125 0.594 0.344 0.844 0.188 0.219 0.5 0.344 0.844 0.344h7.031c1 0 1.25-0.531 0.531-1.25l-2.219-2.281 3.688-3.688c0.094-0.125 0.188-0.281 0.188-0.438s-0.094-0.281-0.188-0.406l-2.156-2.156c-0.125-0.125-0.25-0.188-0.438-0.188-0.156 0-0.313 0.063-0.438 0.188l-3.719 3.719-2.219-2.25c-0.719-0.719-1.25-0.469-1.25 0.5zM0.156 24.063l2.188 2.156c0.125 0.094 0.25 0.188 0.438 0.188 0.156 0 0.281-0.094 0.406-0.188l3.719-3.719 2.25 2.219c0.719 0.719 1.25 0.5 1.25-0.469v-7.063c0-0.594-0.5-1.188-1.188-1.188h-7.031c-1 0-1.281 0.531-0.563 1.25l2.25 2.25-3.719 3.688c-0.094 0.125-0.156 0.313-0.156 0.469s0.063 0.281 0.156 0.406z"></path>
-                </g>
-              </svg>
-              Shrink
-            </button>
+            <div class="share-buttons">
+              <button id="copy-link-btn" class="copy-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+              </button>
+              <button id="qr-toggle-btn" class="qr-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM13 13h2v2h-2zM15 15h2v2h-2zM13 17h2v2h-2zM15 19h2v2h-2zM17 13h2v2h-2zM19 15h2v2h-2zM17 17h2v2h-2zM19 19h2v2h-2z"/>
+                </svg>
+                QR Code
+              </button>
+              <button id="short-url-btn" class="short-url-button">
+                <svg width="16" height="16" viewBox="-5.5 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <title>small</title>
+                    <path d="M10.406 7.75v7.063c0 0.313 0.125 0.594 0.344 0.844 0.188 0.219 0.5 0.344 0.844 0.344h7.031c1 0 1.25-0.531 0.531-1.25l-2.219-2.281 3.688-3.688c0.094-0.125 0.188-0.281 0.188-0.438s-0.094-0.281-0.188-0.406l-2.156-2.156c-0.125-0.125-0.25-0.188-0.438-0.188-0.156 0-0.313 0.063-0.438 0.188l-3.719 3.719-2.219-2.25c-0.719-0.719-1.25-0.469-1.25 0.5zM0.156 24.063l2.188 2.156c0.125 0.094 0.25 0.188 0.438 0.188 0.156 0 0.281-0.094 0.406-0.188l3.719-3.719 2.25 2.219c0.719 0.719 1.25 0.5 1.25-0.469v-7.063c0-0.594-0.5-1.188-1.188-1.188h-7.031c-1 0-1.281 0.531-0.563 1.25l2.25 2.25-3.719 3.688c-0.094 0.125-0.156 0.313-0.156 0.469s0.063 0.281 0.156 0.406z"></path>
+                  </g>
+                </svg>
+                Shrink
+              </button>
+            </div>
+            <div id="editor-qr-container" class="qr-container" style="display: none;">
+              <div id="editor-qr" class="qr-code"></div>
+            </div>
           </div>
         </div>
 
         <div class="share-option">
           <h4>App Link</h4>
           <p>Run as a standalone app (full-screen view without editor)</p>
-          <div class="share-link-container">
+          <div class="share-content">
             <input type="text" id="app-link" class="text-input" readonly placeholder="Generating app link...">
-            <button id="copy-app-link-btn" class="copy-button">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-              </svg>
-              Copy
-            </button>
-            <button id="short-app-url-btn" class="short-url-button">
-              <svg width="16" height="16" viewBox="-5.5 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <title>small</title>
-                  <path d="M10.406 7.75v7.063c0 0.313 0.125 0.594 0.344 0.844 0.188 0.219 0.5 0.344 0.844 0.344h7.031c1 0 1.25-0.531 0.531-1.25l-2.219-2.281 3.688-3.688c0.094-0.125 0.188-0.281 0.188-0.438s-0.094-0.281-0.188-0.406l-2.156-2.156c-0.125-0.125-0.25-0.188-0.438-0.188-0.156 0-0.313 0.063-0.438 0.188l-3.719 3.719-2.219-2.25c-0.719-0.719-1.25-0.469-1.25 0.5zM0.156 24.063l2.188 2.156c0.125 0.094 0.25 0.188 0.438 0.188 0.156 0 0.281-0.094 0.406-0.188l3.719-3.719 2.25 2.219c0.719 0.719 1.25 0.5 1.25-0.469v-7.063c0-0.594-0.5-1.188-1.188-1.188h-7.031c-1 0-1.281 0.531-0.563 1.25l2.25 2.25-3.719 3.688c-0.094 0.125-0.156 0.313-0.156 0.469s0.063 0.281 0.156 0.406z"></path>
-                </g>
-              </svg>
-              Shrink
-            </button>
+            <div class="share-buttons">
+              <button id="copy-app-link-btn" class="copy-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+              </button>
+              <button id="app-qr-toggle-btn" class="qr-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM13 13h2v2h-2zM15 15h2v2h-2zM13 17h2v2h-2zM15 19h2v2h-2zM17 13h2v2h-2zM19 15h2v2h-2zM17 17h2v2h-2zM19 19h2v2h-2z"/>
+                </svg>
+                QR Code
+              </button>
+              <button id="short-app-url-btn" class="short-url-button">
+                <svg width="16" height="16" viewBox="-5.5 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <title>small</title>
+                    <path d="M10.406 7.75v7.063c0 0.313 0.125 0.594 0.344 0.844 0.188 0.219 0.5 0.344 0.844 0.344h7.031c1 0 1.25-0.531 0.531-1.25l-2.219-2.281 3.688-3.688c0.094-0.125 0.188-0.281 0.188-0.438s-0.094-0.281-0.188-0.406l-2.156-2.156c-0.125-0.125-0.25-0.188-0.438-0.188-0.156 0-0.313 0.063-0.438 0.188l-3.719 3.719-2.219-2.25c-0.719-0.719-1.25-0.469-1.25 0.5zM0.156 24.063l2.188 2.156c0.125 0.094 0.25 0.188 0.438 0.188 0.156 0 0.281-0.094 0.406-0.188l3.719-3.719 2.25 2.219c0.719 0.719 1.25 0.5 1.25-0.469v-7.063c0-0.594-0.5-1.188-1.188-1.188h-7.031c-1 0-1.281 0.531-0.563 1.25l2.25 2.25-3.719 3.688c-0.094 0.125-0.156 0.313-0.156 0.469s0.063 0.281 0.156 0.406z"></path>
+                  </g>
+                </svg>
+                Shrink
+              </button>
+            </div>
+            <div id="app-qr-container" class="qr-container" style="display: none;">
+              <div id="app-qr" class="qr-code"></div>
+            </div>
           </div>
         </div>
       </div>
