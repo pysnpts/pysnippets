@@ -2,37 +2,46 @@ import { basicSetup, EditorView } from "https://esm.sh/codemirror@6.0.1";
 import { html } from "https://esm.sh/@codemirror/lang-html@6.4.5";
 import { css } from "https://esm.sh/@codemirror/lang-css@6.2.1";
 import { python } from "https://esm.sh/@codemirror/lang-python@6.1.2";
+import { EditorState } from "https://esm.sh/@codemirror/state@6.5.2";
+import { keymap } from "https://esm.sh/@codemirror/view@6.38.1";
+import { defaultKeymap, indentWithTab } from "https://esm.sh/@codemirror/commands@6.8.1";
+import { indentUnit } from "https://esm.sh/@codemirror/language@6.11.2";
 import { decodeSharedCode, generateShareLink as generateShareUrl } from "./shared.js";
 
 
-function createEditor(parentId, languageExtension) {
+function createEditor(parentId, languageExtension, tabSize) {
   const parent = document.getElementById(parentId);
-  return new EditorView({
+  let state = EditorState.create({
     doc: '',
     extensions: [
+        indentUnit.of(" ".repeat(tabSize)),   // Indent with 4 spaces
+        keymap.of([indentWithTab, ...defaultKeymap]), // Allow Tab key to indent
         basicSetup,
         languageExtension,
         EditorView.theme({
-          "&": {
-            height: "100%",
-            fontSize: "14px"
-          },
-          ".cm-scroller": {
-            overflow: "auto"
-          },
-          ".cm-focused": {
-            outline: "none"
-          }
-        })
-    ],
+            "&": {
+                height: "100%",
+                fontSize: "14px"
+            },
+            ".cm-scroller": {
+                overflow: "auto"
+            },
+            ".cm-focused": {
+                outline: "none"
+            }
+        }),
+    ]
+});
+  return new EditorView({
+    state,
     parent
   });
 }
 
 // Initialize editors
-const htmlEditor = createEditor("html-editor", html());
-const cssEditor = createEditor("css-editor", css());
-const pythonEditor = createEditor("python-editor", python());
+const htmlEditor = createEditor("html-editor", html(), 2);
+const cssEditor = createEditor("css-editor", css(), 2);
+const pythonEditor = createEditor("python-editor", python(), 4);
 
 // Set focus on the Python editor
 pythonEditor.focus();
@@ -417,7 +426,7 @@ document.addEventListener('keydown', (e) => {
 function runCode() {
   const html = htmlEditor.state.doc.toString();
   const cssCode = `<style>${cssEditor.state.doc.toString()}</style>`;
-  const py = pythonEditor.state.doc.toString();
+  const py = pythonEditor.state.doc.toString().trim();
 
   // Get runtime selection
   const runtimeInput = document.querySelector('input[name="runtime"]:checked');
@@ -496,9 +505,7 @@ function runCode() {
       </head>
       <body>
         ${configElement}${html}
-        <script ${scriptAttributes}>
-      ${py}
-        </script>
+        <script ${scriptAttributes}>${py}</script>
       </body>
     </html>
   `.trim());
