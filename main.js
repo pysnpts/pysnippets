@@ -11,7 +11,19 @@ function createEditor(parentId, languageExtension) {
     doc: '',
     extensions: [
         basicSetup,
-        languageExtension
+        languageExtension,
+        EditorView.theme({
+          "&": {
+            height: "100%",
+            fontSize: "14px"
+          },
+          ".cm-scroller": {
+            overflow: "auto"
+          },
+          ".cm-focused": {
+            outline: "none"
+          }
+        })
     ],
     parent
   });

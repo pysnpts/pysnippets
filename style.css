@@ -135,6 +135,8 @@ a:hover {
   height: 50%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .label {
@@ -152,6 +154,17 @@ a:hover {
 .editor {
   flex: 1;
   border: 1px solid #ccc;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.editor .cm-editor {
+  height: 100%;
+  overflow: auto;
+}
+
+.editor .cm-scroller {
+  overflow: auto;
 }
 
 #output {
