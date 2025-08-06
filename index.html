@@ -130,7 +130,6 @@
       <div class="modal-header">
         <h2>Settings</h2>
         <div class="header-actions">
-          <a href="https://docs.pyscript.net/latest/user-guide/configuration/" target="_blank" class="help-link">Help with settings</a>
           <button class="close-button" data-modal="settings-modal">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -145,11 +144,11 @@
           <div class="runtime-options">
             <div class="radio-item">
               <input type="radio" id="micropython" name="runtime" value="micropython" checked>
-              <label for="micropython">MicroPython (small and fast)</label>
+              <label for="micropython"><a href="https://docs.pyscript.net/latest/user-guide/architecture/#micropython" target="_blank">MicroPython</a> (small and fast)</label>
             </div>
             <div class="radio-item">
               <input type="radio" id="pyodide" name="runtime" value="pyodide">
-              <label for="pyodide">Pyodide (standard CPython)</label>
+              <label for="pyodide"><a href="https://docs.pyscript.net/latest/user-guide/architecture/#pyodide" target="_blank">Pyodide</a> (standard CPython)</label>
             </div>
           </div>
         </div>
@@ -159,23 +158,23 @@
           <div class="checkbox-options">
             <div class="checkbox-item">
               <input type="checkbox" id="terminal" checked>
-              <label for="terminal">Use a terminal for output</label>
+              <label for="terminal">Use a <a href="https://docs.pyscript.net/latest/user-guide/terminal/" target="_blank">terminal for output</a></label>
             </div>
             <div class="checkbox-item">
               <input type="checkbox" id="worker">
-              <label for="worker">Run in a web worker</label>
+              <label for="worker">Run in a <a href="https://docs.pyscript.net/latest/user-guide/workers/" target="_blank">web worker</a></label>
             </div>
           </div>
         </div>
         <div class="settings-group">
           <h3>Packages</h3>
-          <p class="settings-description">A comma separated list of quoted packages to install from <a href="https://pypi.org/" target="_blank">PyPI</a>.</p>
+          <p class="settings-description">A comma separated list of quoted <a href="https://docs.pyscript.net/latest/user-guide/configuration/#packages" target="_blank">packages to install</a> from <a href="https://pypi.org/" target="_blank">PyPI</a>.</p>
           <input type="text" id="packages" class="text-input" placeholder='"pandas", "numpy", "requests==2.28.1", "matplotlib>=3.5.0"'>
         </div>
         <div class="settings-group">
           <h3>Files</h3>
-          <p class="settings-description">Copy files to use. Each line: "source/url" = "destination/path"</p>
-          <textarea id="files" class="textarea-input" rows="4" placeholder='"https://example.com/file.csv" = "./file.csv"&#10;"https://example.com/data.json" = "./data.json"'></textarea>
+          <p class="settings-description"><a href="https://docs.pyscript.net/latest/user-guide/configuration/#files" target="_blank">Fetch files</a> to use. Each line: "source/url" = "destination/path"</p>
+          <textarea id="files" class="textarea-input" rows="4" placeholder='"https://example.com/file.csv" = "./file.csv"&#10;"https://gist.githubusercontent.com/user/.../data.json" = "./data.json"'></textarea>
         </div>
       </div>
     </div>
@@ -195,10 +194,10 @@
         </div>
       </div>
       <div class="modal-body">
-        <p>PySnippets combines the power of Python with the simplicity of online code snippets. Put simply, we provide a seamless experience to quickly run and share simple Python code in the browser, thanks to <a href="https://pyscript.net/" target="_blank">PyScript</a>.</p>
-        <p>PySnippets are lightweight and fast, making them ideal for quick experiments and learning. We support both <a href="https://micropython.org/" target="_blank">MicroPython</a> and <a href="https://pyodide.org/" target="_blank">Pyodide</a> runtimes: choose which one to use based on your Pythonic needs. Other settings refine your code's Python environment. The <a href="https://docs.pyscript.net/" target="_blank">PyScript docs</a> are your friend, as are the friendly folk in the <a href="https://discord.gg/HxvBtukrg2" target="_blank">PyScript Discord</a> community.</p>
+        <p>PySnippets provides a seamless experience to quickly run and share simple Python code in the browser, thanks to <a href="https://pyscript.net/" target="_blank">PyScript</a>.</p>
+        <p>PySnippets are lightweight and fast, making them ideal for quick experiments and learning. We support both <a href="https://micropython.org/" target="_blank">MicroPython</a> and <a href="https://pyodide.org/" target="_blank">Pyodide</a> runtimes. Other settings refine your snippet's Python environment. The <a href="https://docs.pyscript.net/" target="_blank">PyScript docs</a> are your friend, as are the friendly folk in the <a href="https://discord.gg/HxvBtukrg2" target="_blank">PyScript Discord</a> community.</p>
         <p>Best of all, share your snippets with others through the simplicity of a link.</p>
-        <p>Whether you're a beginner or an experienced developer, PySnippets offers a straightforward way to write and share Python code without the overhead of complex setups.</p>
+        <p>Whether you're a beginner or an experienced developer, PySnippets offers a straightforward way to write and share Python code without the overhead of complex configuration.</p>
         <p>(P.S. Did we mention it's also <a href="https://github.com/pysnpts/pysnippets" target="_blank">open-source</a>?)</p>
       </div>
     </div>
