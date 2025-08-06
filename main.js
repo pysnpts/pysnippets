@@ -66,7 +66,7 @@ function closeModal(modalId) {
 }
 
 // Generate a shareable link with the current code
-function generateShareLink() {
+async function generateShareLink() {
   const html = htmlEditor.state.doc.toString();
   const css = cssEditor.state.doc.toString();
   const python = pythonEditor.state.doc.toString();
@@ -91,19 +91,44 @@ function generateShareLink() {
     files: files
   };
   
-  // Use shared utility to generate the URLs
-  const shareUrl = generateShareUrl(shareData, false); // Editor URL
-  const appUrl = generateShareUrl(shareData, true);    // App URL
-  
-  // Update the share link inputs
+  // Show loading state in inputs
   const shareLinkInput = document.getElementById('share-link');
-  shareLinkInput.value = shareUrl;
-  
   const appLinkInput = document.getElementById('app-link');
-  appLinkInput.value = appUrl;
+  shareLinkInput.value = 'Generating share link...';
+  appLinkInput.value = 'Generating app link...';
   
-  // Generate QR codes
-  generateQRCodes(shareUrl, appUrl);
+  try {
+    // Use shared utility to generate the URLs (now async)
+    const shareUrl = await generateShareUrl(shareData, false); // Editor URL
+    const appUrl = await generateShareUrl(shareData, true);    // App URL
+    
+    // Check if either URL returned an error
+    if ((shareUrl && shareUrl.error) || (appUrl && appUrl.error)) {
+      const errorUrl = shareUrl.error ? shareUrl : appUrl;
+      showUrlTooLongError(errorUrl.message, errorUrl.length);
+      return false; // Indicate error occurred
+    }
+    
+    // Update the share link inputs
+    shareLinkInput.value = shareUrl;
+    appLinkInput.value = appUrl;
+    
+    // Generate QR codes
+    generateQRCodes(shareUrl, appUrl);
+    return true; // Indicate success
+  } catch (error) {
+    console.error('Error generating share links:', error);
+    shareLinkInput.value = 'Error generating link';
+    appLinkInput.value = 'Error generating link';
+    return false; // Indicate error occurred
+  }
+}
+
+// Show error modal for URL that's too long
+function showUrlTooLongError(message, length) {
+  const errorMessage = document.getElementById('error-message');
+  errorMessage.textContent = `${message} (Current length: ${length} characters, maximum: 2000)`;
+  openModal('error-modal');
 }
 
 // Generate QR codes for share URLs
@@ -296,11 +321,11 @@ function generateShortAppUrl() {
 }
 
 // Load shared code from URL parameter
-function loadSharedCode() {
-  const shareData = decodeSharedCode();
-  
-  if (shareData) {
-    try {
+async function loadSharedCode() {
+  try {
+    const shareData = await decodeSharedCode();
+    
+    if (shareData) {
       // Load code into editors
       if (shareData.html) {
         htmlEditor.dispatch({
@@ -346,10 +371,9 @@ function loadSharedCode() {
       setTimeout(() => {
         runCode();
       }, 100);
-      
-    } catch (error) {
-      console.error('Error loading shared code:', error);
     }
+  } catch (error) {
+    console.error('Error loading shared code:', error);
   }
 }
 
@@ -359,9 +383,12 @@ settingsBtn.addEventListener('click', () => openModal('settings-modal'));
 
 // Share button
 const shareBtn = document.getElementById('share-btn');
-shareBtn.addEventListener('click', () => {
-  generateShareLink();
-  openModal('share-modal');
+shareBtn.addEventListener('click', async () => {
+  const success = await generateShareLink();
+  if (success) {
+    openModal('share-modal');
+  }
+  // If not successful, the error modal will already be shown
 });
 
 // About modal

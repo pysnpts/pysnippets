@@ -331,5 +331,39 @@
       </div>
     </div>
   </footer>
+  
+  <!-- Error Modal -->
+  <div id="error-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>
+          Share Link Too Long
+        </h2>
+        <div class="header-spacer"></div>
+        <div class="close-button-container">
+          <button class="close-button" data-modal="error-modal">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="error-content">
+          <p id="error-message">An error occurred.</p>
+          <div class="error-suggestions">
+            <h4>Suggestions to reduce link size:</h4>
+            <ul>
+              <li>Remove unnecessary code or comments.</li>
+              <li>Reduce the number of imported packages.</li>
+              <li>Split large projects into smaller snippets.</li>
+              <li>Use shorter variable and function names.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

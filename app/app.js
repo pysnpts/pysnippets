@@ -4,16 +4,21 @@
 import { decodeSharedCode, generateShareLink } from '../shared.js';
 
 // Initialize the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  const shareData = decodeSharedCode();
-  
-  if (shareData) {
-    // Load and execute the shared code
-    loadAndExecuteSharedCode(shareData);
-    // Add the "Made with PySnippets" link
-    addPySnippetsAttribution(shareData);
-  } else {
-    // Show the "Oops!" message
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const shareData = await decodeSharedCode();
+    
+    if (shareData) {
+      // Load and execute the shared code
+      loadAndExecuteSharedCode(shareData);
+      // Add the "Made with PySnippets" link
+      await addPySnippetsAttribution(shareData);
+    } else {
+      // Show the "Oops!" message
+      showOopsMessage();
+    }
+  } catch (error) {
+    console.error('Error loading shared code:', error);
     showOopsMessage();
   }
 });
@@ -101,7 +106,7 @@ function executeCodeInBody(shareData) {
   }
 }
 
-function addPySnippetsAttribution(shareData) {
+async function addPySnippetsAttribution(shareData) {
   // Create the attribution link
   const attribution = document.createElement('div');
   attribution.className = 'pysnippets-attribution';
@@ -116,7 +121,7 @@ function addPySnippetsAttribution(shareData) {
   logo.style.flexShrink = '0';
   
   const link = document.createElement('a');
-  link.href = generateEditLink(shareData);
+  link.href = await generateEditLink(shareData);
   link.target = '_blank';
   link.style.display = 'flex';
   link.style.alignItems = 'center';
@@ -132,9 +137,9 @@ function addPySnippetsAttribution(shareData) {
   document.body.appendChild(attribution);
 }
 
-function generateEditLink(shareData) {
+async function generateEditLink(shareData) {
   // Generate a link back to the editor with the code
-  return generateShareLink(shareData, false); // Editor URL
+  return await generateShareLink(shareData, false); // Editor URL
 }
 
 function showOopsMessage() {
