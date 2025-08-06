@@ -2,6 +2,7 @@ import { basicSetup, EditorView } from "https://esm.sh/codemirror@6.0.1";
 import { html } from "https://esm.sh/@codemirror/lang-html@6.4.5";
 import { css } from "https://esm.sh/@codemirror/lang-css@6.2.1";
 import { python } from "https://esm.sh/@codemirror/lang-python@6.1.2";
+import { decodeSharedCode, generateShareLink as generateShareUrl } from "./shared.js";
 
 
 function createEditor(parentId, languageExtension) {
@@ -69,14 +70,16 @@ function generateShareLink() {
     files: files
   };
   
-  // Encode the data as a URL parameter (Unicode-safe)
-  const jsonString = JSON.stringify(shareData);
-  const encodedData = btoa(encodeURIComponent(jsonString));
-  const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
+  // Use shared utility to generate the URLs
+  const shareUrl = generateShareUrl(shareData, false); // Editor URL
+  const appUrl = generateShareUrl(shareData, true);    // App URL
   
-  // Update the share link input
+  // Update the share link inputs
   const shareLinkInput = document.getElementById('share-link');
   shareLinkInput.value = shareUrl;
+  
+  const appLinkInput = document.getElementById('app-link');
+  appLinkInput.value = appUrl;
 }
 
 // Copy share link to clipboard
@@ -133,15 +136,66 @@ function generateShortUrl() {
   }, 2000);
 }
 
+// Copy app share link to clipboard
+function copyAppShareLink() {
+  const appLinkInput = document.getElementById('app-link');
+  appLinkInput.select();
+  appLinkInput.setSelectionRange(0, 99999); // For mobile devices
+  
+  try {
+    navigator.clipboard.writeText(appLinkInput.value).then(() => {
+      // Visual feedback for successful copy
+      const copyBtn = document.getElementById('copy-app-link-btn');
+      const originalText = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Copied!';
+      copyBtn.style.background = '#4CAF50';
+      
+      setTimeout(() => {
+        copyBtn.innerHTML = originalText;
+        copyBtn.style.background = '';
+      }, 2000);
+    });
+  } catch (err) {
+    // Fallback for older browsers
+    document.execCommand('copy');
+    console.log('App link copied to clipboard');
+  }
+}
+
+// Open is.gd URL shortening page for app link in a new tab
+function generateShortAppUrl() {
+  const appLinkInput = document.getElementById('app-link');
+  const shortUrlBtn = document.getElementById('short-app-url-btn');
+  const originalUrl = appLinkInput.value;
+  
+  if (!originalUrl || originalUrl === 'Generating app link...') {
+    return;
+  }
+  
+  // URL encode the original URL for the query parameter
+  const encodedUrl = encodeURIComponent(originalUrl);
+  const shortUrlCreationUrl = `https://is.gd/create.php?url=${encodedUrl}`;
+  
+  // Open the URL shortening page in a new tab
+  window.open(shortUrlCreationUrl, '_blank');
+  
+  // Visual feedback for opening the tab
+  const originalText = shortUrlBtn.innerHTML;
+  shortUrlBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/></svg>Opened';
+  shortUrlBtn.style.background = '#5a6268';
+  
+  setTimeout(() => {
+    shortUrlBtn.innerHTML = originalText;
+    shortUrlBtn.style.background = '';
+  }, 2000);
+}
+
 // Load shared code from URL parameter
 function loadSharedCode() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const shareParam = urlParams.get('share');
+  const shareData = decodeSharedCode();
   
-  if (shareParam) {
+  if (shareData) {
     try {
-      const shareData = JSON.parse(decodeURIComponent(atob(shareParam)));
-      
       // Load code into editors
       if (shareData.html) {
         htmlEditor.dispatch({
@@ -219,6 +273,14 @@ copyLinkBtn.addEventListener('click', copyShareLink);
 // Short URL button
 const shortUrlBtn = document.getElementById('short-url-btn');
 shortUrlBtn.addEventListener('click', generateShortUrl);
+
+// Copy app share link button
+const copyAppLinkBtn = document.getElementById('copy-app-link-btn');
+copyAppLinkBtn.addEventListener('click', copyAppShareLink);
+
+// Short app URL button
+const shortAppUrlBtn = document.getElementById('short-app-url-btn');
+shortAppUrlBtn.addEventListener('click', generateShortAppUrl);
 
 // Close buttons with data-modal attribute
 document.querySelectorAll('.close-button[data-modal]').forEach(button => {

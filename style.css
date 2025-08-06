@@ -409,6 +409,27 @@ a:hover {
   min-height: 80px;
 }
 
+.share-option {
+  margin-bottom: 24px;
+}
+
+.share-option:last-child {
+  margin-bottom: 0;
+}
+
+.share-option h4 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.share-option p {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
 .share-link-container {
   display: flex;
   gap: 8px;
