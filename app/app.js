@@ -3,27 +3,26 @@
 
 import { decodeSharedCode, generateShareLink } from '../shared.js';
 
-// Initialize the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const shareData = await decodeSharedCode();
-    
-    if (shareData) {
-      // Load and execute the shared code
-      loadAndExecuteSharedCode(shareData);
-      // Add the "Made with PySnippets" link
-      await addPySnippetsAttribution(shareData);
-    } else {
-      // Show the "Oops!" message
-      showOopsMessage();
-    }
-  } catch (error) {
-    console.error('Error loading shared code:', error);
+// Initialize the app - no need for DOMContentLoaded since modules are deferred
+try {
+  const shareData = await decodeSharedCode();
+  
+  if (shareData) {
+    // Load and execute the shared code
+    loadAndExecuteSharedCode(shareData);
+    // Add the "Made with PySnippets" link
+    await addPySnippetsAttribution(shareData);
+  } else {
+    // Show the "Oops!" message
     showOopsMessage();
   }
-});
+} catch (error) {
+  console.error('Error loading shared code:', error);
+  showOopsMessage();
+}
 
 function loadAndExecuteSharedCode(shareData) {
+  console.log('Running shared code:', shareData);
   // Set the title if there's Python code
   if (shareData.python) {
     document.title = 'PySnippets App';
@@ -62,17 +61,21 @@ function executeCodeInBody(shareData) {
     
     if (filesInput) {
       configContent += '[files]\n';
-      const fileLines = filesInput.split('\n').filter(line => line.trim());
-      fileLines.forEach(line => {
-        if (line.trim()) {
-          configContent += `${line.trim()}\n`;
-        }
-      });
+      configContent += filesInput;
     }
     
     if (configContent) {
       configElement = `<${configTag}>\n${configContent}</${configTag}>\n`;
     }
+  }
+
+  // Build script tag attributes
+  let scriptAttributes = `type="${scriptType}"`;
+  if (enableTerminal) {
+    scriptAttributes += ' terminal';
+  }
+  if (enableWorker) {
+    scriptAttributes += ' worker';
   }
 
   // Add CSS to head if present
@@ -82,28 +85,15 @@ function executeCodeInBody(shareData) {
     document.head.appendChild(styleElement);
   }
 
-  // Add HTML content to body
-  if (html) {
-    const htmlContainer = document.createElement('div');
-    htmlContainer.innerHTML = html;
-    document.body.appendChild(htmlContainer);
-  }
+  // Build the complete HTML content using template string
+  const bodyContent = `
+    ${configElement}
+    ${html}
+    ${py ? `<script ${scriptAttributes}>${py}</script>` : ''}
+  `.trim();
 
-  // Add configuration and script
-  if (configElement) {
-    const configContainer = document.createElement('div');
-    configContainer.innerHTML = configElement;
-    document.body.appendChild(configContainer);
-  }
-
-  if (py) {
-    const scriptElement = document.createElement('script');
-    scriptElement.type = scriptType;
-    if (enableTerminal) scriptElement.setAttribute('terminal', '');
-    if (enableWorker) scriptElement.setAttribute('worker', '');
-    scriptElement.textContent = py;
-    document.body.appendChild(scriptElement);
-  }
+  // Set the body content
+  document.body.innerHTML = bodyContent;
 }
 
 async function addPySnippetsAttribution(shareData) {

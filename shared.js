@@ -14,7 +14,9 @@ export async function decodeSharedCode() {
     try {
       // First try to decompress (new format)
       try {
-        const decompressed = await decompress(shareParam);
+        // URL-decode the parameter first, then decompress
+        const urlDecodedParam = decodeURIComponent(shareParam);
+        const decompressed = await decompress(urlDecodedParam);
         return JSON.parse(decompressed);
       } catch (decompressError) {
         // Fallback to old format (uncompressed base64)
@@ -35,7 +37,8 @@ export async function generateShareLink(shareData, isAppUrl = false) {
     // Compress the data for smaller URLs
     const jsonString = JSON.stringify(shareData);
     const compressed = await compress(jsonString);
-    const encodedData = '' + compressed; // Convert to string representation
+    // URL-encode the compressed data to make it safe for query parameters
+    const encodedData = encodeURIComponent(compressed);
     
     // Determine the base URL
     let baseUrl = `${window.location.origin}`;

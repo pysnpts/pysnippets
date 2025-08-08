@@ -14,7 +14,7 @@
     posthog.init('phc_efywmdDKsi6Ii7q6irNklSQoVMbQVFKhzfwS5AB0o1x', {
         api_host: 'https://eu.i.posthog.com',
         defaults: '2025-05-24',
-        person_profiles: 'always', // or 'always' to create profiles for anonymous users as well
+        person_profiles: 'always',
     })
   </script>
 </head>
@@ -146,6 +146,14 @@
       </div>
       <div class="modal-body">
         <div class="settings-group">
+          <h3>Version</h3>
+          <p class="settings-description">Select the version of PyScript to use.</p>
+          <select id="pyscript-version" class="text-input">
+            <option value="2025.8.1" selected>2025.8.1</option>
+            <option value="2025.7.3">2025.7.3</option>
+          </select>
+        </div>
+        <div class="settings-group">
           <h3>Runtime</h3>
           <p class="settings-description">Select the version of Python to use.</p>
           <div class="runtime-options">
@@ -175,13 +183,13 @@
         </div>
         <div class="settings-group">
           <h3>Packages</h3>
-          <p class="settings-description">A comma separated list of quoted <a href="https://docs.pyscript.net/latest/user-guide/configuration/#packages" target="_blank">packages to install</a> from <a href="https://pypi.org/" target="_blank">PyPI</a>.</p>
-          <input type="text" id="packages" class="text-input" placeholder='"pandas", "numpy", "requests==2.28.1", "matplotlib>=3.5.0"'>
+          <p class="settings-description">A list of <a href="https://docs.pyscript.net/latest/user-guide/configuration/#packages" target="_blank">packages to install</a> from <a href="https://pypi.org/" target="_blank">PyPI</a>. One package per line.</p>
+          <textarea id="packages" class="textarea-input" rows="3" placeholder="pandas&#10;numpy&#10;matplotlib>=3.5.0"></textarea>
         </div>
         <div class="settings-group">
           <h3>Files</h3>
           <p class="settings-description"><a href="https://docs.pyscript.net/latest/user-guide/configuration/#files" target="_blank">Fetch files</a> to use. Each line: "source/url" = "destination/path"</p>
-          <textarea id="files" class="textarea-input" rows="4" placeholder='"https://example.com/file.csv" = "./file.csv"&#10;"https://gist.githubusercontent.com/user/.../data.json" = "./data.json"'></textarea>
+          <textarea id="files" class="textarea-input" rows="4" placeholder='"https://example.com/file.csv" = "./file.csv"&#10;"https://example.com/data.json" = "./data.json"'></textarea>
         </div>
       </div>
     </div>
