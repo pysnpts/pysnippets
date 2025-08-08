@@ -1,5 +1,11 @@
 /* App-specific styles for PySnippets app runner */
 
+/* Hide config elements by default */
+mpy-config,
+py-config {
+  display: none !important;
+}
+
 /* Ensure the attribution is visible and properly styled */
 .pysnippets-attribution {
   position: fixed !important;

@@ -8,8 +8,8 @@ try {
   const shareData = await decodeSharedCode();
   
   if (shareData) {
-    // Load and execute the shared code
-    loadAndExecuteSharedCode(shareData);
+    // Load PyScript with the correct version, then execute the code
+    await loadPyScriptAndExecute(shareData);
     // Add the "Made with PySnippets" link
     await addPySnippetsAttribution(shareData);
   } else {
@@ -21,62 +21,64 @@ try {
   showOopsMessage();
 }
 
-function loadAndExecuteSharedCode(shareData) {
+async function loadPyScriptAndExecute(shareData) {
   console.log('Running shared code:', shareData);
+  
   // Set the title if there's Python code
   if (shareData.python) {
     document.title = 'PySnippets App';
   }
   
-  // Set up the body for app mode
-  document.body.innerHTML = '';
-  document.body.className = 'app-mode';
+  // FIRST: Set up config elements before loading PyScript
+  setupConfigElements(shareData);
   
-  // Execute the code directly in the body
-  executeCodeInBody(shareData);
+  // SECOND: Get PyScript version and load PyScript resources
+  const pyscriptVersion = shareData.pyscriptVersion || '2025.8.1';
+  await loadPyScriptResources(pyscriptVersion);
+  
+  // THIRD: Add the HTML and Python code to the body
+  addContentToBody(shareData);
 }
 
-function executeCodeInBody(shareData) {
+function setupConfigElements(shareData) {
+  const runtime = shareData.runtime || 'micropython';
+  const packages = shareData.packages || [];
+  const files = shareData.files || {};
+  
+  // Handle configuration elements
+  if (packages.length > 0 || Object.keys(files).length > 0) {
+    const configTag = runtime === 'micropython' ? 'mpy-config' : 'py-config';
+    const configElement = document.querySelector(configTag);
+    
+    if (configElement) {
+      const config = {};
+      if (packages.length > 0) {
+        config.packages = packages;
+      }
+      if (Object.keys(files).length > 0) {
+        config.files = files;
+      }
+      
+      configElement.textContent = JSON.stringify(config);
+    }
+  }
+  
+  // Remove the empty config element (the one not being used)
+  const unusedConfigTag = runtime === 'micropython' ? 'py-config' : 'mpy-config';
+  const unusedConfigElement = document.querySelector(unusedConfigTag);
+  if (unusedConfigElement) {
+    unusedConfigElement.remove();
+  }
+}
+
+function addContentToBody(shareData) {
   const html = shareData.html || '';
   const cssCode = shareData.css || '';
   const py = shareData.python || '';
-
-  // Get runtime and settings
   const runtime = shareData.runtime || 'micropython';
   const scriptType = runtime === 'micropython' ? 'mpy' : 'py';
   const enableTerminal = shareData.terminal || false;
   const enableWorker = shareData.worker || false;
-  const packagesInput = shareData.packages || '';
-  const filesInput = shareData.files || '';
-
-  // Build configuration element if needed
-  let configElement = '';
-  if (packagesInput || filesInput) {
-    const configTag = runtime === 'micropython' ? 'mpy-config' : 'py-config';
-    let configContent = '';
-    
-    if (packagesInput) {
-      configContent += `packages = [${packagesInput}]\n`;
-    }
-    
-    if (filesInput) {
-      configContent += '[files]\n';
-      configContent += filesInput;
-    }
-    
-    if (configContent) {
-      configElement = `<${configTag}>\n${configContent}</${configTag}>\n`;
-    }
-  }
-
-  // Build script tag attributes
-  let scriptAttributes = `type="${scriptType}"`;
-  if (enableTerminal) {
-    scriptAttributes += ' terminal';
-  }
-  if (enableWorker) {
-    scriptAttributes += ' worker';
-  }
 
   // Add CSS to head if present
   if (cssCode) {
@@ -85,15 +87,51 @@ function executeCodeInBody(shareData) {
     document.head.appendChild(styleElement);
   }
 
-  // Build the complete HTML content using template string
-  const bodyContent = `
-    ${configElement}
-    ${html}
-    ${py ? `<script ${scriptAttributes}>${py}</script>` : ''}
-  `.trim();
+  // Add HTML content to the body (after config elements)
+  if (html) {
+    const htmlContainer = document.createElement('div');
+    htmlContainer.innerHTML = html;
+    document.body.appendChild(htmlContainer);
+  }
 
-  // Set the body content
-  document.body.innerHTML = bodyContent;
+  // Add Python script to the body
+  if (py) {
+    const scriptElement = document.createElement('script');
+    scriptElement.setAttribute('type', scriptType);
+    if (enableTerminal) {
+      scriptElement.setAttribute('terminal', '');
+    }
+    if (enableWorker) {
+      scriptElement.setAttribute('worker', '');
+    }
+    scriptElement.textContent = py;
+    document.body.appendChild(scriptElement);
+  }
+}
+
+async function loadPyScriptResources(version) {
+  return new Promise((resolve, reject) => {
+    // Remove any existing PyScript resources
+    const existingCSS = document.querySelector('link[href*="pyscript.net"]');
+    const existingJS = document.querySelector('script[src*="pyscript.net"]');
+    
+    if (existingCSS) existingCSS.remove();
+    if (existingJS) existingJS.remove();
+    
+    // Load CSS
+    const cssLink = document.createElement('link');
+    cssLink.rel = 'stylesheet';
+    cssLink.href = `https://pyscript.net/releases/${version}/core.css`;
+    document.head.appendChild(cssLink);
+    
+    // Load JS module
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = `https://pyscript.net/releases/${version}/core.js`;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load PyScript version ${version}`));
+    document.head.appendChild(script);
+  });
 }
 
 async function addPySnippetsAttribution(shareData) {

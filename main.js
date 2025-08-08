@@ -46,6 +46,87 @@ const pythonEditor = createEditor("python-editor", python(), 4);
 // Set focus on the Python editor
 pythonEditor.focus();
 
+// Centralized settings handler
+function getCurrentSettings() {
+  // Get PyScript version
+  const pyscriptVersion = document.getElementById('pyscript-version').value;
+
+  // Get runtime selection
+  const runtimeInput = document.querySelector('input[name="runtime"]:checked');
+  const runtime = runtimeInput ? runtimeInput.value : 'micropython';
+
+  // Get checkbox states
+  const terminal = document.getElementById('terminal').checked;
+  const worker = document.getElementById('worker').checked;
+
+  // Parse packages as array (one per line)
+  const packagesText = document.getElementById('packages').value.trim();
+  const packages = packagesText ? packagesText.split('\n').map(line => line.trim()).filter(line => line) : [];
+
+  // Parse files as object (key = value pairs)
+  const filesText = document.getElementById('files').value.trim();
+  const files = {};
+  if (filesText) {
+    filesText.split('\n').forEach(line => {
+      const trimmedLine = line.trim();
+      if (trimmedLine && trimmedLine.includes('=')) {
+        const [key, ...valueParts] = trimmedLine.split('=');
+        const value = valueParts.join('='); // Handle values that contain '='
+        files[key.trim()] = value.trim();
+      }
+    });
+  }
+
+  return {
+    pyscriptVersion: pyscriptVersion,
+    runtime: runtime,
+    terminal: terminal,
+    worker: worker,
+    packages: packages,
+    files: files
+  };
+}
+
+// Apply settings to the UI
+function applySettings(settings) {
+  // Set PyScript version
+  if (settings.pyscriptVersion) {
+    const versionSelect = document.getElementById('pyscript-version');
+    if (versionSelect) {
+      versionSelect.value = settings.pyscriptVersion;
+    }
+  }
+
+  // Set runtime
+  if (settings.runtime) {
+    const runtimeInput = document.querySelector(`input[name="runtime"][value="${settings.runtime}"]`);
+    if (runtimeInput) runtimeInput.checked = true;
+  }
+
+  // Set checkboxes
+  if (settings.hasOwnProperty('terminal')) {
+    document.getElementById('terminal').checked = settings.terminal;
+  }
+
+  if (settings.hasOwnProperty('worker')) {
+    document.getElementById('worker').checked = settings.worker;
+  }
+
+  // Set packages: convert array back to newline-separated text
+  if (settings.packages) {
+    const packagesText = settings.packages.join('\n');
+    document.getElementById('packages').value = packagesText;
+  }
+
+  // Set files: convert object back to key=value pairs
+  if (settings.files) {
+    const filesText = Object.entries(settings.files)
+      .map(([key, value]) => `${key} = ${value}`)
+      .join('\n');
+    document.getElementById('files').value = filesText;
+  }
+}
+
 // Shared modal functionality
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
@@ -71,24 +152,15 @@ async function generateShareLink() {
   const css = cssEditor.state.doc.toString();
   const python = pythonEditor.state.doc.toString();
   
-  // Get current settings
-  const runtimeInput = document.querySelector('input[name="runtime"]:checked');
-  const runtime = runtimeInput ? runtimeInput.value : 'micropython';
-  const enableTerminal = document.getElementById('terminal').checked;
-  const enableWorker = document.getElementById('worker').checked;
-  const packages = document.getElementById('packages').value.trim();
-  const files = document.getElementById('files').value.trim();
+  // Get current settings using centralized function
+  const settings = getCurrentSettings();
   
   // Create a data object with all the code and settings
   const shareData = {
     html: html,
     css: css,
     python: python,
-    runtime: runtime,
-    terminal: enableTerminal,
-    worker: enableWorker,
-    packages: packages,
-    files: files
+    ...settings
   };
   
   // Show loading state in inputs
@@ -345,27 +417,8 @@ async function loadSharedCode() {
         });
       }
       
-      // Load settings
-      if (shareData.runtime) {
-        const runtimeInput = document.querySelector(`input[name="runtime"][value="${shareData.runtime}"]`);
-        if (runtimeInput) runtimeInput.checked = true;
-      }
-      
-      if (shareData.hasOwnProperty('terminal')) {
-        document.getElementById('terminal').checked = shareData.terminal;
-      }
-      
-      if (shareData.hasOwnProperty('worker')) {
-        document.getElementById('worker').checked = shareData.worker;
-      }
-      
-      if (shareData.packages) {
-        document.getElementById('packages').value = shareData.packages;
-      }
-      
-      if (shareData.files) {
-        document.getElementById('files').value = shareData.files;
-      }
+      // Load PyScript version and settings using centralized function
+      applySettings(shareData);
       
       // Automatically run the shared code after a short delay to ensure everything is loaded
       setTimeout(() => {
@@ -455,44 +508,10 @@ function runCode() {
   const cssCode = `<style>${cssEditor.state.doc.toString()}</style>`;
   const py = pythonEditor.state.doc.toString().trim();
 
-  // Get runtime selection
-  const runtimeInput = document.querySelector('input[name="runtime"]:checked');
-  const runtime = runtimeInput ? runtimeInput.value : 'micropython';
+  // Get current settings using centralized function
+  const settings = getCurrentSettings();
+  const { pyscriptVersion, runtime, terminal: enableTerminal, worker: enableWorker, packages, files } = settings;
   const scriptType = runtime === 'micropython' ? 'mpy' : 'py';
-
-  // Get checkbox states
-  const enableTerminal = document.getElementById('terminal').checked;
-  const enableWorker = document.getElementById('worker').checked;
-
-  // Get packages and files input
-  const packagesInput = document.getElementById('packages').value.trim();
-  const filesInput = document.getElementById('files').value.trim();
-
-  // Build configuration element if needed
-  let configElement = '';
-  if (packagesInput || filesInput) {
-    const configTag = runtime === 'micropython' ? 'mpy-config' : 'py-config';
-    let configContent = '';
-    
-    if (packagesInput) {
-      configContent += `packages = [${packagesInput}]\n`;
-    }
-    
-    if (filesInput) {
-      configContent += '[files]\n';
-      // Split by lines and add each file mapping
-      const fileLines = filesInput.split('\n').filter(line => line.trim());
-      fileLines.forEach(line => {
-        if (line.trim()) {
-          configContent += `${line.trim()}\n`;
-        }
-      });
-    }
-    
-    if (configContent) {
-      configElement = `<${configTag}>\n${configContent}</${configTag}>\n`;
-    }
-  }
 
   // Build script tag attributes
   let scriptAttributes = `type="${scriptType}"`;
@@ -501,6 +520,19 @@ function runCode() {
   }
   if (enableWorker) {
     scriptAttributes += ' worker';
+  }
+  
+  // Add config attribute if there are packages or files
+  if (packages.length > 0 || Object.keys(files).length > 0) {
+    const config = {};
+    if (packages.length > 0) {
+      config.packages = packages;
+    }
+    if (Object.keys(files).length > 0) {
+      config.files = files;
+    }
+    const configJson = JSON.stringify(config);
+    scriptAttributes += ` config='${configJson}'`;
   }
 
   const oldFrame = document.getElementById("output");
@@ -526,12 +558,12 @@ function runCode() {
     <!DOCTYPE html>
     <html lang="en">
       <head>
-        <link rel="stylesheet" href="https://pyscript.net/releases/2025.7.3/core.css">
-        <script type="module" src="https://pyscript.net/releases/2025.7.3/core.js"></script>
+        <link rel="stylesheet" href="https://pyscript.net/releases/${pyscriptVersion}/core.css">
+        <script type="module" src="https://pyscript.net/releases/${pyscriptVersion}/core.js"></script>
         ${cssCode}
       </head>
       <body>
-        ${configElement}${html}
+        ${html}
         <script ${scriptAttributes}>${py}</script>
       </body>
     </html>

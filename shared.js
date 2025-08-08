@@ -12,17 +12,10 @@ export async function decodeSharedCode() {
   
   if (shareParam) {
     try {
-      // First try to decompress (new format)
-      try {
-        // URL-decode the parameter first, then decompress
-        const urlDecodedParam = decodeURIComponent(shareParam);
-        const decompressed = await decompress(urlDecodedParam);
-        return JSON.parse(decompressed);
-      } catch (decompressError) {
-        // Fallback to old format (uncompressed base64)
-        console.log('Falling back to legacy format');
-        return JSON.parse(decodeURIComponent(atob(shareParam)));
-      }
+      // URL-decode the parameter first, then decompress
+      const urlDecodedParam = decodeURIComponent(shareParam);
+      const decompressed = await decompress(urlDecodedParam);
+      return JSON.parse(decompressed);
     } catch (error) {
       console.error('Error loading shared code:', error);
       return null;
@@ -68,33 +61,11 @@ export async function generateShareLink(shareData, isAppUrl = false) {
     return shareUrl;
   } catch (error) {
     console.error('Error compressing share data:', error);
-    // Fallback to old method if compression fails
-    const jsonString = JSON.stringify(shareData);
-    const encodedData = btoa(encodeURIComponent(jsonString));
-    
-    let baseUrl = `${window.location.origin}`;
-    if (isAppUrl) {
-      if (window.location.pathname.includes('/app/')) {
-        baseUrl += window.location.pathname;
-      } else {
-        baseUrl += '/app/';
-      }
-    } else {
-      baseUrl += '/';
-    }
-    
-    const fallbackUrl = `${baseUrl}?share=${encodedData}`;
-    
-    // Check fallback URL length too
-    if (fallbackUrl.length > 2000) {
-      return {
-        error: true,
-        message: 'The shared code is too large to create a shareable link. Please try reducing the amount of code or use fewer packages.',
-        length: fallbackUrl.length
-      };
-    }
-    
-    return fallbackUrl;
+    return {
+      error: true,
+      message: 'Failed to generate share link. Please try again.',
+      length: 0
+    };
   }
 }
 
