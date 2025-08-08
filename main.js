@@ -154,8 +154,6 @@ function closeModal(modalId) {
   if (modal) {
     modal.classList.remove('show');
     document.body.style.overflow = '';
-    // Return focus to the Python editor
-    pythonEditor.focus();
   }
 }
 
