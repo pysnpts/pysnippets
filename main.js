@@ -72,7 +72,20 @@ function getCurrentSettings() {
       if (trimmedLine && trimmedLine.includes('=')) {
         const [key, ...valueParts] = trimmedLine.split('=');
         const value = valueParts.join('='); // Handle values that contain '='
-        files[key.trim()] = value.trim();
+        
+        // Clean key and value by trimming and removing surrounding quotes if present
+        let cleanKey = key.trim();
+        let cleanValue = value.trim();
+        
+        // Remove surrounding quotes if they exist
+        if (cleanKey.startsWith('"') && cleanKey.endsWith('"')) {
+          cleanKey = cleanKey.slice(1, -1);
+        }
+        if (cleanValue.startsWith('"') && cleanValue.endsWith('"')) {
+          cleanValue = cleanValue.slice(1, -1);
+        }
+        
+        files[cleanKey] = cleanValue;
       }
     });
   }
@@ -121,7 +134,7 @@ function applySettings(settings) {
   // Set files: convert object back to key=value pairs
   if (settings.files) {
     const filesText = Object.entries(settings.files)
-      .map(([key, value]) => `${key} = ${value}`)
+      .map(([key, value]) => `"${key}" = "${value}"`)
       .join('\n');
     document.getElementById('files').value = filesText;
   }
