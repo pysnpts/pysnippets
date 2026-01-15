@@ -1,11 +1,12 @@
-import { basicSetup, EditorView } from "https://esm.sh/codemirror@6.0.1";
-import { html } from "https://esm.sh/@codemirror/lang-html@6.4.5";
-import { css } from "https://esm.sh/@codemirror/lang-css@6.2.1";
-import { python } from "https://esm.sh/@codemirror/lang-python@6.1.2";
+// Keep every CodeMirror package on the same @codemirror/state version to avoid duplicate instances.
+import { basicSetup } from "https://esm.sh/@codemirror/basic-setup@0.20.0?deps=@codemirror/state@6.5.2,@codemirror/view@6.38.1";
+import { EditorView, keymap } from "https://esm.sh/@codemirror/view@6.38.1?deps=@codemirror/state@6.5.2";
 import { EditorState } from "https://esm.sh/@codemirror/state@6.5.2";
-import { keymap } from "https://esm.sh/@codemirror/view@6.38.1";
-import { defaultKeymap, indentWithTab } from "https://esm.sh/@codemirror/commands@6.8.1";
-import { indentUnit } from "https://esm.sh/@codemirror/language@6.11.2";
+import { defaultKeymap, indentWithTab } from "https://esm.sh/@codemirror/commands@6.8.1?deps=@codemirror/state@6.5.2,@codemirror/view@6.38.1";
+import { indentUnit } from "https://esm.sh/@codemirror/language@6.11.2?deps=@codemirror/state@6.5.2";
+import { html } from "https://esm.sh/@codemirror/lang-html@6.4.5?deps=@codemirror/state@6.5.2";
+import { css } from "https://esm.sh/@codemirror/lang-css@6.2.1?deps=@codemirror/state@6.5.2";
+import { python } from "https://esm.sh/@codemirror/lang-python@6.1.2?deps=@codemirror/state@6.5.2";
 import { decodeSharedCode, generateShareLink as generateShareUrl } from "./shared.js";
 
 
